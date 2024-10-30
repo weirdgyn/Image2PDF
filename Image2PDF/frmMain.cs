@@ -1,3 +1,4 @@
+using iText.Kernel.Geom;
 using iText.Kernel.Pdf;
 using System.Media;
 using System.Text;
@@ -13,15 +14,13 @@ namespace Image2PDF
             cbPageSize.DataSource = Enum.GetValues(typeof(PageSize));
         }
 
-        private void CreateDoc(string srcFilename, string folder)
+        private void CreateDoc(string srcFilename, string folder, PageSize pageSize)
         {
-            string dstFilename = Path.Combine(folder, Path.GetFileNameWithoutExtension(srcFilename) + ".pdf");
+            string dstFilename = System.IO.Path.Combine(folder, System.IO.Path.GetFileNameWithoutExtension(srcFilename) + ".pdf");
 
             using PdfWriter writer = new(dstFilename);
             using PdfDocument pdfDocument = new(writer);
-            PageSize pageSize;
 
-            Enum.TryParse(cbPageSize.SelectedValue.ToString(), out pageSize);
 
             iText.IO.Image.ImageData imageData = iText.IO.Image.ImageDataFactory.Create(srcFilename);
 
@@ -42,235 +41,6 @@ namespace Image2PDF
                         rectangle.GetHeight());
                 else throw new Exception("Page size not supported!");
             }
-
-            /*
-            switch (pageSize)
-            {
-                case PageSize.ImageSize:
-                    rectangle = new(0, 0, (int)image.GetImageWidth(), (int)image.GetImageHeight());
-                    break;
-
-                case PageSize.A0:
-                    rectangle = iText.Kernel.Geom.PageSize.A0;
-
-                    image.ScaleToFit(
-                        iText.Kernel.Geom.PageSize.A0.GetWidth(),
-                        iText.Kernel.Geom.PageSize.A0.GetHeight());
-                    break;
-
-                case PageSize.A1:
-                    rectangle = iText.Kernel.Geom.PageSize.A1;
-
-                    image.ScaleToFit(
-                        iText.Kernel.Geom.PageSize.A1.GetWidth(),
-                        iText.Kernel.Geom.PageSize.A1.GetHeight());
-                    break;
-
-                case PageSize.A2:
-                    rectangle = iText.Kernel.Geom.PageSize.A2;
-
-                    image.ScaleToFit(
-                        iText.Kernel.Geom.PageSize.A2.GetWidth(),
-                        iText.Kernel.Geom.PageSize.A2.GetHeight());
-                    break;
-
-                case PageSize.A3:
-                    rectangle = iText.Kernel.Geom.PageSize.A3;
-
-                    image.ScaleToFit(
-                        iText.Kernel.Geom.PageSize.A3.GetWidth(),
-                        iText.Kernel.Geom.PageSize.A3.GetHeight());
-                    break;
-
-                case PageSize.A4:
-                    rectangle = iText.Kernel.Geom.PageSize.A4;
-
-                    image.ScaleToFit(
-                        iText.Kernel.Geom.PageSize.A4.GetWidth(),
-                        iText.Kernel.Geom.PageSize.A4.GetHeight());
-                    break;
-
-                case PageSize.A5:
-                    rectangle = iText.Kernel.Geom.PageSize.A5;
-
-                    image.ScaleToFit(
-                        iText.Kernel.Geom.PageSize.A5.GetWidth(),
-                        iText.Kernel.Geom.PageSize.A5.GetHeight());
-                    break;
-
-                case PageSize.A6:
-                    rectangle = iText.Kernel.Geom.PageSize.A6;
-
-                    image.ScaleToFit(
-                        iText.Kernel.Geom.PageSize.A6.GetWidth(),
-                        iText.Kernel.Geom.PageSize.A6.GetHeight());
-                    break;
-
-                case PageSize.A7:
-                    rectangle = iText.Kernel.Geom.PageSize.A7;
-
-                    image.ScaleToFit(
-                        iText.Kernel.Geom.PageSize.A7.GetWidth(),
-                        iText.Kernel.Geom.PageSize.A7.GetHeight());
-                    break;
-
-                case PageSize.A8:
-                    rectangle = iText.Kernel.Geom.PageSize.A8;
-
-                    image.ScaleToFit(
-                        iText.Kernel.Geom.PageSize.A8.GetWidth(),
-                        iText.Kernel.Geom.PageSize.A8.GetHeight());
-                    break;
-
-                case PageSize.A9:
-                    rectangle = iText.Kernel.Geom.PageSize.A9;
-
-                    image.ScaleToFit(
-                        iText.Kernel.Geom.PageSize.A9.GetWidth(),
-                        iText.Kernel.Geom.PageSize.A9.GetHeight());
-                    break;
-
-                case PageSize.A10:
-                    rectangle = iText.Kernel.Geom.PageSize.A10;
-
-                    image.ScaleToFit(
-                        iText.Kernel.Geom.PageSize.A10.GetWidth(),
-                        iText.Kernel.Geom.PageSize.A10.GetHeight());
-                    break;
-
-
-                case PageSize.B0:
-                    rectangle = iText.Kernel.Geom.PageSize.B0;
-
-                    image.ScaleToFit(
-                        iText.Kernel.Geom.PageSize.B0.GetWidth(),
-                        iText.Kernel.Geom.PageSize.B0.GetHeight());
-                    break;
-
-                case PageSize.B1:
-                    rectangle = iText.Kernel.Geom.PageSize.B1;
-
-                    image.ScaleToFit(
-                        iText.Kernel.Geom.PageSize.B1.GetWidth(),
-                        iText.Kernel.Geom.PageSize.B1.GetHeight());
-                    break;
-
-                case PageSize.B2:
-                    rectangle = iText.Kernel.Geom.PageSize.B2;
-
-                    image.ScaleToFit(
-                        iText.Kernel.Geom.PageSize.B2.GetWidth(),
-                        iText.Kernel.Geom.PageSize.B2.GetHeight());
-                    break;
-
-                case PageSize.B3:
-                    rectangle = iText.Kernel.Geom.PageSize.B3;
-
-                    image.ScaleToFit(
-                        iText.Kernel.Geom.PageSize.B3.GetWidth(),
-                        iText.Kernel.Geom.PageSize.B3.GetHeight());
-                    break;
-
-                case PageSize.B4:
-                    rectangle = iText.Kernel.Geom.PageSize.B4;
-
-                    image.ScaleToFit(
-                        iText.Kernel.Geom.PageSize.B4.GetWidth(),
-                        iText.Kernel.Geom.PageSize.B4.GetHeight());
-                    break;
-
-                case PageSize.B5:
-                    rectangle = iText.Kernel.Geom.PageSize.B5;
-
-                    image.ScaleToFit(
-                        iText.Kernel.Geom.PageSize.B5.GetWidth(),
-                        iText.Kernel.Geom.PageSize.B5.GetHeight());
-                    break;
-
-                case PageSize.B6:
-                    rectangle = iText.Kernel.Geom.PageSize.B6;
-
-                    image.ScaleToFit(
-                        iText.Kernel.Geom.PageSize.B6.GetWidth(),
-                        iText.Kernel.Geom.PageSize.B6.GetHeight());
-                    break;
-
-                case PageSize.B7:
-                    rectangle = iText.Kernel.Geom.PageSize.B7;
-
-                    image.ScaleToFit(
-                        iText.Kernel.Geom.PageSize.B7.GetWidth(),
-                        iText.Kernel.Geom.PageSize.B7.GetHeight());
-                    break;
-
-                case PageSize.B8:
-                    rectangle = iText.Kernel.Geom.PageSize.B8;
-
-                    image.ScaleToFit(
-                        iText.Kernel.Geom.PageSize.B8.GetWidth(),
-                        iText.Kernel.Geom.PageSize.B8.GetHeight());
-                    break;
-
-                case PageSize.B9:
-                    rectangle = iText.Kernel.Geom.PageSize.B9;
-
-                    image.ScaleToFit(
-                        iText.Kernel.Geom.PageSize.B9.GetWidth(),
-                        iText.Kernel.Geom.PageSize.B9.GetHeight());
-                    break;
-
-                case PageSize.B10:
-                    rectangle = iText.Kernel.Geom.PageSize.B10;
-
-                    image.ScaleToFit(
-                        iText.Kernel.Geom.PageSize.B10.GetWidth(),
-                        iText.Kernel.Geom.PageSize.B10.GetHeight());
-                    break;
-
-                case PageSize.Letter:
-                    rectangle = iText.Kernel.Geom.PageSize.LETTER;
-
-                    image.ScaleToFit(
-                        iText.Kernel.Geom.PageSize.LETTER.GetWidth(),
-                        iText.Kernel.Geom.PageSize.LETTER.GetHeight());
-                    break;
-
-                case PageSize.Legal:
-                    rectangle = iText.Kernel.Geom.PageSize.LEGAL;
-
-                    image.ScaleToFit(
-                        iText.Kernel.Geom.PageSize.LEGAL.GetWidth(),
-                        iText.Kernel.Geom.PageSize.LEGAL.GetHeight());
-                    break;
-
-                case PageSize.Executive:
-                    rectangle = iText.Kernel.Geom.PageSize.EXECUTIVE;
-
-                    image.ScaleToFit(
-                        iText.Kernel.Geom.PageSize.EXECUTIVE.GetWidth(),
-                        iText.Kernel.Geom.PageSize.EXECUTIVE.GetHeight());
-                    break;
-
-                case PageSize.Ledger:
-                    rectangle = iText.Kernel.Geom.PageSize.LEDGER;
-
-                    image.ScaleToFit(
-                        iText.Kernel.Geom.PageSize.LEDGER.GetWidth(),
-                        iText.Kernel.Geom.PageSize.LEDGER.GetHeight());
-                    break;
-
-                case PageSize.Tabloid:
-                    rectangle = iText.Kernel.Geom.PageSize.TABLOID;
-
-                    image.ScaleToFit(
-                        iText.Kernel.Geom.PageSize.TABLOID.GetWidth(),
-                        iText.Kernel.Geom.PageSize.TABLOID.GetHeight());
-                    break;
-
-                default:
-                    throw new Exception("Page size not supported!");
-            }
-            */
 
             if (rectangle == null)
                 throw new Exception("Page not created!");
@@ -375,8 +145,12 @@ namespace Image2PDF
                     folder = txtDestinationFolder.Text;
 
                 if (folder == null) folder = "";
+                
+                PageSize pageSize;
+                
+                Enum.TryParse(cbPageSize.SelectedValue.ToString(), out pageSize);
 
-                CreateDoc(file, folder);
+                CreateDoc(file, folder, pageSize);
             }
 
             SystemSounds.Beep.Play();
@@ -413,25 +187,21 @@ namespace Image2PDF
 
         private async void AddImageFromUrl(string url)
         {
-            using (var client = new HttpClient())
-            {
-                var data = await client.GetByteArrayAsync(url);
+            using var client = new HttpClient();
+            var data = await client.GetByteArrayAsync(url);
 
-                using (var buffer = new MemoryStream(data))
-                {
-                    var image = Image.FromStream(buffer);
+            using var buffer = new MemoryStream(data);
+            var image = Image.FromStream(buffer);
 
-                    var guid = Guid.NewGuid().ToString();
+            var guid = Guid.NewGuid().ToString();
 
-                    var temp = Path.GetTempPath();
+            var temp = System.IO.Path.GetTempPath();
 
-                    var filename = Path.Combine(temp, guid + ".bmp");
+            var filename = System.IO.Path.Combine(temp, guid + ".bmp");
 
-                    image.Save(filename);
+            image.Save(filename);
 
-                    AddFileAsync(filename);
-                }
-            }
+            AddFileAsync(filename);
         }
 
         private void txtImageFile_DragEnter(object sender, DragEventArgs e)
