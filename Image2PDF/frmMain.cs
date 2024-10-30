@@ -1,5 +1,6 @@
 using iText.Kernel.Pdf;
 using System.Media;
+using System.Text;
 
 namespace Image2PDF
 {
@@ -298,6 +299,29 @@ namespace Image2PDF
                     txtImageFile.AppendText(Environment.NewLine + file);
         }
 
+        private void AddFilesAsync(string[] files)
+        {
+            if (txtImageFile.InvokeRequired)
+                txtImageFile.Invoke(new Action<string[]>(AddFilesAsync), files);
+            else
+                AddFiles(files);
+        }
+
+        private void AddFile(string file)
+        {
+            if (string.IsNullOrEmpty(file))
+                return;
+
+            txtImageFile.AppendText(file);
+        }
+        private void AddFileAsync(string file)
+        {
+            if (txtImageFile.InvokeRequired)
+                txtImageFile.Invoke(new Action<string>(AddFileAsync), file);
+            else
+                AddFile(file);
+        }
+
         private void SelectPageSize(string filename)
         {
             using PdfReader reader = new(filename);
@@ -371,9 +395,43 @@ namespace Image2PDF
             if (e.Data is null)
                 return;
 
-            string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
 
-            AddFiles(files);
+                AddFiles(files);
+            }
+            else if (e.Data.GetDataPresent("text/x-moz-url"))
+            {
+                var data = (MemoryStream)e.Data.GetData("text/x-moz-url");
+
+                var url = Encoding.Unicode.GetString(data.ToArray()).Trim('\n', '\0');
+
+                AddImageFromUrl(url);
+            }
+        }
+
+        private async void AddImageFromUrl(string url)
+        {
+            using (var client = new HttpClient())
+            {
+                var data = await client.GetByteArrayAsync(url);
+
+                using (var buffer = new MemoryStream(data))
+                {
+                    var image = Image.FromStream(buffer);
+
+                    var guid = Guid.NewGuid().ToString();
+
+                    var temp = Path.GetTempPath();
+
+                    var filename = Path.Combine(temp, guid + ".bmp");
+
+                    image.Save(filename);
+
+                    AddFileAsync(filename);
+                }
+            }
         }
 
         private void txtImageFile_DragEnter(object sender, DragEventArgs e)
@@ -381,7 +439,7 @@ namespace Image2PDF
             if (e.Data is null)
                 return;
 
-            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            if (e.Data.GetDataPresent(DataFormats.FileDrop) || e.Data.GetDataPresent("text/x-moz-url"))
                 e.Effect = DragDropEffects.Copy;
         }
 
